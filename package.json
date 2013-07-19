@@ -1,0 +1,10 @@
+{
+  "name": "triage-with-me",
+  "fullName": "Triage with me",
+  "id": "jid0-skldjfhalkjsdhfauwyertwuy3rt@jetpack",
+  "description": "Triage tool for bugzilla.",
+  "author": "",
+  "license": "MPL 2.0",
+  "version": "0.1",
+  "dependencies": ["menuitems", "addon-sdk"]
+}
