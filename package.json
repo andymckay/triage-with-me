@@ -12,6 +12,6 @@
     "title": "Triage with me server",
     "description": "Traige server, along with protocol",
     "type": "string",
-    "value": "http://localhost:3000/"
+    "value": "http://triage-with-me.paas.allizom.org/"
   }]
 }
