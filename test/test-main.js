@@ -1,12 +1,13 @@
-var main = require("./main");
+var main = require("../lib/main");
+var { getMostRecentBrowserWindow } = require("sdk/window/utils")
 
-exports["test main"] = function(assert) {
-  assert.pass("Unit test running!");
-};
-
-exports["test main async"] = function(assert, done) {
-  assert.pass("async Unit test running!");
-  done();
+exports["test menuitem exists"] = function(assert) {
+  var browser = getMostRecentBrowserWindow();
+  var node = browser.document.getElementById("triage-with-me");
+  assert.ok(node, "the menuitem exists");
+  assert.equal(node.parentNode.id,
+               "menu_ToolsPopup",
+               "the menuitem has the correct parent node");
 };
 
 require("sdk/test").run(exports);

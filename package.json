@@ -1,12 +1,15 @@
 {
   "name": "triage-with-me",
-  "fullName": "Triage with me",
+  "title": "Triage with me",
   "id": "jid0-skldjfhalkjsdhfauwyertwuy3rt@jetpack",
   "description": "Triage tool for bugzilla and github",
   "author": "",
   "license": "MPL 2.0",
-  "version": "0.3.1",
-  "dependencies": ["menuitems", "addon-sdk"],
+  "version": "0.3.2",
+  "dependencies": {
+    "menuitem": "0.0.4"
+  },
+  "main": "./lib/main",
   "preferences": [{
     "name": "server",
     "title": "Triage with me server",
