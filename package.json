@@ -5,14 +5,14 @@
   "description": "Triage tool for bugzilla and github",
   "author": "",
   "license": "MPL 2.0",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "dependencies": ["menuitems", "addon-sdk"],
   "preferences": [{
     "name": "server",
     "title": "Triage with me server",
     "description": "Traige server, along with protocol",
     "type": "string",
-    "value": "https://triage-with-me.herokuapp.com/triage.html"
+    "value": "https://triage-with-me.herokuapp.com/"
   }],
   "main": "lib/main.js"
 }
