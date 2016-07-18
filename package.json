@@ -5,7 +5,7 @@
   "description": "Triage tool for bugzilla and github",
   "author": "",
   "license": "MPL 2.0",
-  "version": "0.3.4",
+  "version": "0.3.8",
   "dependencies": {
     "0": "addon-sdk"
   },
