@@ -1,0 +1,28 @@
+{
+    "applications": {
+        "gecko": {
+            "id": "jid0-skldjfhalkjsdhfauwyertwuy3rt@jetpack"
+        }
+    },
+    "name": "Triage with me",
+    "version": "0.4",
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "permissions": [
+        "notifications",
+        "storage",
+        "tabs"
+    ],
+    "browser_action": {
+        "default_title": "Triage with me",
+        "default_icon": {
+            "16": "data/full-16.png",
+            "32": "data/full-32.png"
+        }
+    },
+    "icons": {
+        "48": "data/full.png"
+    },
+    "manifest_version": 2
+}
