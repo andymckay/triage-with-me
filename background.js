@@ -1,4 +1,5 @@
-var server = 'https://triage-with-me.herokuapp.com/';
+//var server = 'https://triage-with-me.herokuapp.com/';
+var server = 'http://localhost:3000/'
 var server_api = server + 'api/';
 var bugzilla = 'bugzilla.mozilla.org';
 var github = 'github.com';
@@ -9,42 +10,49 @@ function notificationClick(notificationId) {
   browser.tabs.create({url: server + 'triage.html#' + notificationId});
 }
 
-function logURL(url, key) {
-  var visited_url = new window.URL(visited);
+function maybeLogURL(url, key) {
+  var visited_url = new window.URL(url);
   if (
       // only record github and bugzilla URLs.
       (visited_url.host === bugzilla || visited_url.host === github) &&
       // ignore some paths though...
       !ignore_paths.includes(visited_url.path)) {
-    browser.notifications.create('foo',
-      {
+    browser.notifications.create(key.toString(), {
+        type: 'basic',
         title: 'Triage with me',
         message: 'URL sent for triage',
-        iconUrl: browser.runtime.getURL('/') + 'data/full.png',
-      }
-    );
+        iconUrl: browser.extension.getURL('/') + 'data/full.png',
+    });
   }
 }
 
-function logTab(tab) {
-  logURL(tab)
+function logNewTab(tab) {
+  browser.storage.local.get('key')
+  .then((result) => {
+    maybeLogURL(tab.url, result.key)
+  });
+}
+
+function logUpdatedTab(tabId, info, tab) {
+  browser.storage.local.get('key')
+  .then((result) => {
+    maybeLogURL(tab.url, result.key)
+  });
 }
 
 function start() {
-  let key = '';
-  console.log(server_api);
-  fetch(server_api)//, {method: 'POST', body: null})
+  fetch(server_api, {method: 'POST'})
   .then((response) => {
-    //console.log(JSON.loads(response.blob()).key);
-    console.log(response);
+    return response.json();
   })
-  /*
-  browser.storage.local.set({state: true, key: })
-  .then(() => {
-    browser.browserAction.setBadgeText({text: 'ON'});
-    browser.tabs.onCreated.addListener(logTab);
-  })
-  */
+  .then((json) => {
+    browser.storage.local.set({state: true, key: json.key, urls: []})
+    .then(() => {
+      browser.browserAction.setBadgeText({text: 'ON'});
+      browser.tabs.onCreated.addListener(logNewTab);
+      browser.tabs.onUpdated.addListener(logUpdatedTab);
+    })
+  });
 }
 
 function end() {
@@ -65,7 +73,6 @@ function toggle() {
     }
   });
 }
-
 
 
 browser.notifications.onClicked.addListener(notificationClick);
