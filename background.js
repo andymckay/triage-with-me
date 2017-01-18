@@ -1,13 +1,12 @@
-//var server = 'https://triage-with-me.herokuapp.com/';
-var server = 'http://localhost:3000/'
+var server = 'https://triage-with-me.herokuapp.com/';
 var server_api = server + 'api/';
 var bugzilla = 'bugzilla.mozilla.org';
 var github = 'github.com';
 var ignore_paths = ['/process_bug.cgi'];
-
+var noid = 'noid';
 
 function notificationClick(notificationId) {
-  if (notificationId) {
+  if (notificationId !== noid) {
     browser.tabs.create({url: server + 'triage.html#' + notificationId});
   }
 }
@@ -31,7 +30,6 @@ function sendToServer(tab, key) {
   })
   .then((response) => {
     if (response.status == 200) {
-      console.log('Server response.status: ' + response.status);
       sendNotification(key, 'URL sent for triage.');
     } else {
       sendNotification(key, 'Failure sending the URL.');
@@ -55,6 +53,8 @@ function maybeLogTab(tab, key) {
         .then(() => {
           sendToServer(tab, key);
         });
+      } else {
+        sendNotification(key, 'URL already sent for triage, ignoring.');
       }
     });
   }
@@ -82,6 +82,7 @@ function start() {
       browser.browserAction.setBadgeText({text: 'ON'});
       browser.tabs.onCreated.addListener(logNewTab);
       browser.tabs.onUpdated.addListener(logUpdatedTab);
+      sendNotification(json.key, 'Triage created.');
     });
   });
 }
@@ -90,13 +91,15 @@ function end() {
   browser.storage.local.set({state: false})
   .then(() => {
     browser.browserAction.setBadgeText({text: ''});
+    browser.tabs.onCreated.removeListener(logNewTab);
+    browser.tabs.onUpdated.removeListener(logUpdatedTab);
+    sendNotification(noid, 'Triage ended.');
   });
 }
 
 function toggle() {
   browser.storage.local.get('state')
   .then((result) => {
-    console.log(result.state);
     if (!result.state || result.state === false) {
       start();
     } else {
@@ -104,7 +107,6 @@ function toggle() {
     }
   });
 }
-
 
 browser.notifications.onClicked.addListener(notificationClick);
 browser.browserAction.onClicked.addListener(toggle);
