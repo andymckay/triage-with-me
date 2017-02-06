@@ -60,15 +60,14 @@ function maybeLogTab(tab, key) {
   }
 }
 
-function logNewTab(tab) {
-  browser.storage.local.get('key')
-  .then((result) => {
-    maybeLogTab(tab, result.key);
+function log(details) {
+  browser.tabs.get(details.tabId)
+  .then((tab) => {
+    browser.storage.local.get('key')
+    .then((result) => {
+      maybeLogTab(tab, result.key);
+    });
   });
-}
-
-function logUpdatedTab(tabId, info, tab) {
-  logNewTab(tab);
 }
 
 function start() {
@@ -80,8 +79,7 @@ function start() {
     browser.storage.local.set({state: true, key: json.key, urls: []})
     .then(() => {
       browser.browserAction.setBadgeText({text: 'ON'});
-      browser.tabs.onCreated.addListener(logNewTab);
-      browser.tabs.onUpdated.addListener(logUpdatedTab);
+      browser.webNavigation.onCompleted.addListener(log);
       sendNotification(json.key, 'Triage created.');
     });
   });
@@ -91,8 +89,7 @@ function end() {
   browser.storage.local.set({state: false})
   .then(() => {
     browser.browserAction.setBadgeText({text: ''});
-    browser.tabs.onCreated.removeListener(logNewTab);
-    browser.tabs.onUpdated.removeListener(logUpdatedTab);
+    browser.webNavigation.onCompleted.removeListener(log);
     sendNotification(noid, 'Triage ended.');
   });
 }
