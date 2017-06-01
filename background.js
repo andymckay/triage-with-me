@@ -1,9 +1,11 @@
 var server = 'https://triage-with-me.herokuapp.com/';
+//var server = 'http://localhost:3000/';
 var server_api = server + 'api/';
 var bugzilla = 'bugzilla.mozilla.org';
 var github = 'github.com';
 var ignore_paths = ['/process_bug.cgi'];
 var noid = 'noid';
+
 
 function notificationClick(notificationId) {
   if (notificationId !== noid) {
@@ -21,13 +23,17 @@ function sendNotification(key, message) {
 }
 
 function getURL(key) {
-  return server_api + key + '/';
+  return `${server_api}${key}/`;
+}
+
+function getClickableURL(key) {
+  return `${server}/triage.html#${key}`;
 }
 
 function sendToServer(tab, key) {
   let headers = new Headers({'content-type': 'application/json'});
   let data = JSON.stringify({url: tab.url, title: tab.title});
-  fetch(getURL, {
+  fetch(getURL(key), {
     body: data,
     headers: headers,
     method: 'POST'
@@ -81,26 +87,47 @@ function start() {
       return response.json();
     })
     .then((json) => {
+      let key = json.key;
       browser.storage.local.set({state: true, key: key, urls: []})
       .then(() => {
         browser.browserAction.setBadgeText({text: 'ON'});
         browser.webNavigation.onCompleted.addListener(log);
-        resolve({state: true, key: key, urls: [1,3,4]});
+        resolve({state: true, key: key, urls: []});
+      });
+    });
+  });
+}
+
+function resume() {
+  return new Promise((resolve, reject) => {
+    browser.storage.local.get()
+    .then((result) => {
+      let data = {state: true, key: result.last, urls: [], last: result.last};
+      browser.storage.local.set(data)
+      .then(() => {
+        browser.browserAction.setBadgeText({text: 'ON'});
+        browser.webNavigation.onCompleted.addListener(log);
+        resolve(data);
       });
     });
   });
 }
 
 function end() {
-  browser.storage.local.set({state: false})
-  .then(() => {
-    browser.browserAction.setBadgeText({text: ''});
-    browser.webNavigation.onCompleted.removeListener(log);
+  return new Promise((resolve, reject) => {
+    browser.storage.local.get()
+    .then((result) => {
+      browser.storage.local.set({state: false, last: result.key})
+      .then(() => {
+        browser.browserAction.setBadgeText({text: ''});
+        browser.webNavigation.onCompleted.removeListener(log);
+        resolve({state: false, last: result.key});
+      });
+    });
   });
 }
 
 function getState() {
-
   return new Promise((resolve, reject) => {
     browser.storage.local.get()
     .then((result) => {
@@ -116,4 +143,3 @@ function getState() {
 
 browser.notifications.onClicked.addListener(notificationClick);
 getState();
-//browser.browserAction.onClicked.addListener(toggle);

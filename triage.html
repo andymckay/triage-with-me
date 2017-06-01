@@ -11,15 +11,17 @@
   <div class="container">
     <div id="on" style="display: none">
       <p>
-        Triage is currently <b>on</b> at <b><a href=""></a></b><br />
-        Number of URLs sent: <b id="number-urls">0</b><br />
+        Triage is currently <b>on</b> at <b><a href=""></a></b> <!--<a href="#" id="triage-copy" title="Copy URL to clipboard" class="label label-info">copy</a>-->
+        <br />
+        Number of URLs sent this session <b id="number-urls">0</b><br />
       </p>
       <div><a href="#" id="turn-off" class="btn btn-danger">Turn off</a></div>
     </div>
     <div id="off" style="display: none">
-      Triage is currently <b>off</b>
+      Triage is currently <b>off</b><br />
+      <span id="last-block" style="display: none">Last triage was <b><a href=""></a></b> and can be <a class="label label-success" href="#" id="triage-resume">resumed</a></span>
       <div>&nbsp;</div>
-      <div><a href="#" id="turn-on" class="btn btn-success">Turn on</a></div>
+      <div><a href="#" id="turn-on" class="btn btn-success">Start new triage</a></div>
     </div>
   </div>
 
