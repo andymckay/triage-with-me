@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="triage.css"/>
+    <link rel="stylesheet" href="bootstrap.min.css"/>
+  </head>
+
+<body>
+  <div class="container">
+    <div id="on" style="display: none">
+      <p>
+        Triage is currently <b>on</b> at <b><a href=""></a></b><br />
+        Number of URLs sent: <b id="number-urls">0</b><br />
+      </p>
+      <div><a href="#" id="turn-off" class="btn btn-danger">Turn off</a></div>
+    </div>
+    <div id="off" style="display: none">
+      Triage is currently <b>off</b>
+      <div>&nbsp;</div>
+      <div><a href="#" id="turn-on" class="btn btn-success">Turn on</a></div>
+    </div>
+  </div>
+
+  <script src="triage.js"></script>
+</body>
+
+</html>

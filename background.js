@@ -20,10 +20,14 @@ function sendNotification(key, message) {
   });
 }
 
+function getURL(key) {
+  return server_api + key + '/';
+}
+
 function sendToServer(tab, key) {
   let headers = new Headers({'content-type': 'application/json'});
   let data = JSON.stringify({url: tab.url, title: tab.title});
-  fetch(server_api + key + '/', {
+  fetch(getURL, {
     body: data,
     headers: headers,
     method: 'POST'
@@ -71,16 +75,18 @@ function log(details) {
 }
 
 function start() {
-  fetch(server_api, {method: 'POST'})
-  .then((response) => {
-    return response.json();
-  })
-  .then((json) => {
-    browser.storage.local.set({state: true, key: json.key, urls: []})
-    .then(() => {
-      browser.browserAction.setBadgeText({text: 'ON'});
-      browser.webNavigation.onCompleted.addListener(log);
-      sendNotification(json.key, 'Triage created.');
+  return new Promise((resolve, reject) => {
+    fetch(server_api, {method: 'POST'})
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      browser.storage.local.set({state: true, key: key, urls: []})
+      .then(() => {
+        browser.browserAction.setBadgeText({text: 'ON'});
+        browser.webNavigation.onCompleted.addListener(log);
+        resolve({state: true, key: key, urls: [1,3,4]});
+      });
     });
   });
 }
@@ -90,20 +96,24 @@ function end() {
   .then(() => {
     browser.browserAction.setBadgeText({text: ''});
     browser.webNavigation.onCompleted.removeListener(log);
-    sendNotification(noid, 'Triage ended.');
   });
 }
 
-function toggle() {
-  browser.storage.local.get('state')
-  .then((result) => {
-    if (!result.state || result.state === false) {
-      start();
-    } else {
-      end();
-    }
+function getState() {
+
+  return new Promise((resolve, reject) => {
+    browser.storage.local.get()
+    .then((result) => {
+      if (!result.state || result.state === false) {
+        browser.browserAction.setBadgeText({text: ''});
+      } else {
+        browser.browserAction.setBadgeText({text: 'ON'});
+      }
+      resolve(result);
+    });
   });
 }
 
 browser.notifications.onClicked.addListener(notificationClick);
-browser.browserAction.onClicked.addListener(toggle);
+getState();
+//browser.browserAction.onClicked.addListener(toggle);
