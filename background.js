@@ -90,6 +90,7 @@ function start() {
       let key = json.key;
       browser.storage.local.set({state: true, key: key, urls: []})
       .then(() => {
+        browser.browserAction.setIcon({path: 'data/full.png'});
         browser.browserAction.setBadgeText({text: 'ON'});
         browser.webNavigation.onCompleted.addListener(log);
         resolve({state: true, key: key, urls: []});
@@ -105,6 +106,7 @@ function resume() {
       let data = {state: true, key: result.last, urls: [], last: result.last};
       browser.storage.local.set(data)
       .then(() => {
+        browser.browserAction.setIcon({path: 'data/full.png'});
         browser.browserAction.setBadgeText({text: 'ON'});
         browser.webNavigation.onCompleted.addListener(log);
         resolve(data);
@@ -119,6 +121,7 @@ function end() {
     .then((result) => {
       browser.storage.local.set({state: false, last: result.key})
       .then(() => {
+        browser.browserAction.setIcon({path: 'data/bw.png'});
         browser.browserAction.setBadgeText({text: ''});
         browser.webNavigation.onCompleted.removeListener(log);
         resolve({state: false, last: result.key});

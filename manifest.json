@@ -5,7 +5,7 @@
         }
     },
     "name": "Triage with me",
-    "version": "0.5",
+    "version": "0.6",
     "background": {
         "scripts": ["background.js"]
     },
@@ -18,8 +18,8 @@
     "browser_action": {
         "default_title": "Triage with me",
         "default_icon": {
-            "16": "data/full-16.png",
-            "32": "data/full-32.png"
+            "16": "data/bw-16.png",
+            "32": "data/bw-32.png"
         },
         "default_popup": "triage.html",
         "browser_style": true

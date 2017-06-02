@@ -12,7 +12,6 @@ function setOn(result) {
 }
 
 function setOff(result) {
-  console.log(result);
   document.getElementById('on').style.display = 'none';
   let off = document.getElementById('off');
   if (result.last) {
@@ -21,8 +20,8 @@ function setOff(result) {
     a.href = background_page.getClickableURL(result.last);
     a.textContent = result.last;
     a.target = '_blank';
-    off.style.display = 'block';
   }
+  off.style.display = 'block';
 }
 
 document.getElementById('triage-resume').addEventListener('click', (e) => {
