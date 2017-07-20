@@ -144,5 +144,6 @@ function getState() {
   });
 }
 
+browser.browserAction.setBadgeBackgroundColor({color: "green"});
 browser.notifications.onClicked.addListener(notificationClick);
 getState();
