@@ -27,7 +27,7 @@ function getURL(key) {
 }
 
 function getClickableURL(key) {
-  return `${server}/triage.html#${key}`;
+  return `${server}triage.html#${key}`;
 }
 
 function sendToServer(tab, key) {
