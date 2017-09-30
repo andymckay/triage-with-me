@@ -1,5 +1,9 @@
 var background_page = browser.extension.getBackgroundPage();
 
+if (background_page === null) {
+  document.getElementById('private').style.display = 'block';
+}
+
 function setOn(result) {
   document.getElementById('off').style.display = 'none';
   let on = document.getElementById('on');

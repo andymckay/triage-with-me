@@ -50,6 +50,8 @@ function sendToServer(tab, key) {
 function maybeLogTab(tab, key) {
   var visited_url = new window.URL(tab.url);
   if (
+      // ignore private tabs
+      !tab.incognito &&
       // only record github and bugzilla URLs.
       (visited_url.host === bugzilla || visited_url.host === github) &&
       // ignore some paths though...
