@@ -31,20 +31,29 @@ document.getElementById('triage-resume').addEventListener('click', (e) => {
   e.preventDefault();
 });
 
-/*
-document.getElementById('triage-copy').addEventListener('click', (e) => {
-  let area = document.createElement("textarea");
-  area.contentEditable = true;
 
+document.getElementById('triage-copy').addEventListener('click', (event) => {
   browser.storage.local.get()
   .then((result) => {
-    area.textContent = 'foo'; //getClickableURL(result.key);
-    area.select();
-    console.log(document.execCommand("copy"));
-    console.log('copied');
+    const setClipboardData = evt => {
+      document.removeEventListener("copy", setClipboardData, true);
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+      evt.clipboardData.setData("text/plain", background_page.getClickableURL(result.key));
+    };
+
+    document.addEventListener("copy", setClipboardData, true);
+    document.execCommand("copy");
+
+    event.target.innerText = 'done';
+    event.target.classList.replace('label-info', 'label-success');
+    window.setTimeout(() => {
+      event.target.innerText = 'copy';
+      event.target.classList.replace('label-success', 'label-info');
+    }, 1000);
   });
+
 });
-*/
 
 document.getElementById('turn-on').addEventListener('click', (e) => {
   background_page.start().then((result) => {

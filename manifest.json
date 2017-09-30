@@ -5,11 +5,12 @@
         }
     },
     "name": "Triage with me",
-    "version": "0.7",
+    "version": "0.8",
     "background": {
         "scripts": ["background.js"]
     },
     "permissions": [
+        "clipboardWrite",
         "notifications",
         "storage",
         "tabs",
