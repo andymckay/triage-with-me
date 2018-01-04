@@ -2,6 +2,7 @@ var server = 'https://triage-with-me.herokuapp.com/';
 //var server = 'http://localhost:3000/';
 var server_api = server + 'api/';
 var bugzilla = 'bugzilla.mozilla.org';
+var bugzilla_rest = 'https://bugzilla.mozilla.org/rest/bug/';
 var github = 'github.com';
 var ignore_paths = ['/process_bug.cgi'];
 var noid = 'noid';
@@ -14,6 +15,7 @@ function notificationClick(notificationId) {
 }
 
 function sendNotification(key, message) {
+  console.log(`[triage-with-me] ${message}`);
   browser.notifications.create(key.toString(), {
       type: 'basic',
       title: 'Triage with me',
@@ -30,9 +32,9 @@ function getClickableURL(key) {
   return `${server}triage.html#${key}`;
 }
 
-function sendToServer(tab, key) {
+function sendToServer(key, url, title) {
   let headers = new Headers({'content-type': 'application/json'});
-  let data = JSON.stringify({url: tab.url, title: tab.title});
+  let data = JSON.stringify({url: url, title: title});
   fetch(getURL(key), {
     body: data,
     headers: headers,
@@ -56,20 +58,42 @@ function maybeLogTab(tab, key) {
       (visited_url.host === bugzilla || visited_url.host === github) &&
       // ignore some paths though...
       !ignore_paths.includes(visited_url.path)) {
-    browser.storage.local.get('urls')
-    .then((result) => {
-      if (!result.urls.includes(tab.url)) {
-        // Ensure we don't store an add-on twice.
-        result.urls.push(tab.url);
-        browser.storage.local.set({urls: result.urls})
-        .then(() => {
-          sendToServer(tab, key);
-        });
-      } else {
-        sendNotification(key, 'URL already sent for triage, ignoring.');
-      }
-    });
+    if (visited_url.host === bugzilla) {
+      // Check that its a publicly available url.
+      let urlObj = new URL(tab.url);
+      let params = new URLSearchParams(urlObj.search);
+      let bugNumber = params.get("id");
+      fetch(`${bugzilla_rest}${bugNumber}`, {})
+      .then((response) => {
+        if (response.status === 404 || response.status === 401) {
+          sendTabToServer(key, tab.url, `${bugNumber} - Private bug.`);
+        }
+        else if (response.status === 200) {
+          sendTabToServer(key, tab.url, tab.title);
+        }
+      });
+      return;
+    }
+    else {
+      sendTabToServer(key, tab.url, tab.title);
+    }
   }
+}
+
+function sendTabToServer(key, url, title) {
+  browser.storage.local.get('urls')
+  .then((result) => {
+    if (!result.urls.includes(url)) {
+      // Ensure we don't store an add-on twice.
+      result.urls.push(url);
+      browser.storage.local.set({urls: result.urls})
+      .then(() => {
+        sendToServer(key, url, title);
+      });
+    } else {
+      sendNotification(key, 'URL already sent for triage, ignoring.');
+    }
+  });
 }
 
 function log(details) {
