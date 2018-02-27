@@ -7,23 +7,6 @@ var github = 'github.com';
 var ignore_paths = ['/process_bug.cgi'];
 var noid = 'noid';
 
-
-function notificationClick(notificationId) {
-  if (notificationId !== noid) {
-    browser.tabs.create({url: server + 'triage.html#' + notificationId});
-  }
-}
-
-function sendNotification(key, message) {
-  console.log(`[triage-with-me] ${message}`);
-  browser.notifications.create(key.toString(), {
-      type: 'basic',
-      title: 'Triage with me',
-      message: message,
-      iconUrl: browser.extension.getURL('/') + 'data/full.png',
-  });
-}
-
 function getURL(key) {
   return `${server_api}${key}/`;
 }
@@ -42,9 +25,13 @@ function sendToServer(key, url, title) {
   })
   .then((response) => {
     if (response.status == 200) {
-      sendNotification(key, 'URL sent for triage.');
+      browser.browserAction.setBadgeBackgroundColor({color: "orange"});
+      window.setTimeout(() => {
+        browser.browserAction.setBadgeBackgroundColor({color: "green"});
+      }, 400);
+      console.log('URL sent for triage.');
     } else {
-      sendNotification(key, 'Failure sending the URL.');
+      console.log('Failure sending the URL.');
     }
   });
 }
@@ -91,7 +78,7 @@ function sendTabToServer(key, url, title) {
         sendToServer(key, url, title);
       });
     } else {
-      sendNotification(key, 'URL already sent for triage, ignoring.');
+      console.log('URL already sent for triage, ignoring.');
     }
   });
 }
@@ -171,5 +158,4 @@ function getState() {
 }
 
 browser.browserAction.setBadgeBackgroundColor({color: "green"});
-browser.notifications.onClicked.addListener(notificationClick);
 getState();
